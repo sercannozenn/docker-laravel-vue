@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  php8:
+      build:
+          context: ./docker/php8
+      hostname: php8
+      ports:
+        - "9000:9000"
+      volumes:
+        - ./projects/:/var/www/html/
+        - ./docker/php8/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      environment:
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  php7:
+    image: php:7.4-fpm
+    build:
+      context: ./docker/php7
+    hostname: php7
+    ports:
+      - "9001:9000"
+    volumes:
+      - ./projects/:/var/www/html/
+      - ./docker/php7/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  vue-ui:
+    build:
+      context: ./projects/proje
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    container_name: vue-ui
+    volumes:
+      - ./projects/proje:/var/www/html/proje
+      - /var/www/html/proje/node_modules
+  nginx:
+        platform: linux/x86_64
+        image: nginx:1.13.8
+        ports:
+          - "80:80"
+        volumes:
+          - ./projects/:/var/www/html/
+          - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+          - php8
+          - php7
+  mysql:
+        platform: linux/x86_64
+        image: mysql:5.7
+        ports:
+          - "3306:3306"
+        depends_on:
+          - php8
+          - php7
+        environment:
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+          MYSQL_USER: ${MYSQL_USER}
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD}
