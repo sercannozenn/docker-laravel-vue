@@ -10,6 +10,7 @@ services:
       volumes:
         - ./projects/:/var/www/html/
         - ./docker/php8/www.conf:/usr/local/etc/php-fpm.d/www.conf
+        - ./docker/php8/php.ini:/usr/local/etc/php/php.ini
       environment:
         MYSQL_USER: ${MYSQL_USER}
         MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -23,6 +24,8 @@ services:
     volumes:
       - ./projects/:/var/www/html/
       - ./docker/php7/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./docker/php7/php.ini:/usr/local/etc/php/php.ini
+
     environment:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
